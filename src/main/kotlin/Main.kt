@@ -2,18 +2,15 @@ package org.example
 
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
 import java.net.ServerSocket
+import java.util.Properties
 
 
 fun main() {
     val localPort = 19132 // 受信ポート
     val remoteHost = "localhost" // 転送先のホスト
     val remotePort = 25565 // 転送先のポート
-
-    val configFile = File("./config.yml")
-    if (!configFile.exists()) {
-        configFile.writeText("localPort : \nremoteHost : localhost\nremotePort : ")
-    }
 
     startServerSocket(localPort,remoteHost,remotePort) // サーバーソケットを起動
 }

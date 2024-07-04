@@ -1,5 +1,6 @@
 package org.example
 
+import java.io.File
 import java.io.IOException
 import java.net.ServerSocket
 
@@ -9,7 +10,12 @@ fun main() {
     val remoteHost = "localhost" // 転送先のホスト
     val remotePort = 25565 // 転送先のポート
 
-    startServerSocket(localPort,remoteHost,remotePort)
+    val configFile = File("./config.yml")
+    if (!configFile.exists()) {
+        configFile.writeText("localPort : \nremoteHost : localhost\nremotePort : ")
+    }
+
+    startServerSocket(localPort,remoteHost,remotePort) // サーバーソケットを起動
 }
 
 fun startServerSocket(localPort:Int, remoteHost:String, remotePort:Int) {

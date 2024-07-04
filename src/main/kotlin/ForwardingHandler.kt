@@ -20,7 +20,8 @@ class ForwardingHandler(private val clientSocket:Socket, private val remoteHost:
                                     try {
                                         forwardData(clientIn, remoteOut)
                                     } catch (e: IOException) {
-                                        println("[サーバー転送] ${clientSocket.inetAddress} が切断しました")
+                                        val cuttingIp = clientSocket.inetAddress
+                                        println("[サーバー転送] $cuttingIp が切断しました")
                                     }
                                 }.start()
 

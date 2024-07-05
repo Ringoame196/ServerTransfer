@@ -1,5 +1,10 @@
 package org.example
 
+import java.net.InetAddress
+import java.net.ServerSocket
+import java.net.URL
+
+
 fun main() {
     println("[サーバーソケットサーバー設定]")
     try {
@@ -19,20 +24,41 @@ fun main() {
 
         println()
 
-        val server = Server(localPort, remoteHost, remotePort)
-        server.start()
-
-        // ユーザー入力を監視して、"stop"コマンドを受け取る
-        Thread {
-            while (true) {
-                val input = readlnOrNull()
-                if (input.equals("stop", ignoreCase = true)) {
-                    server.stop()
-                    break
-                }
-            }
-        }.start()
+        startServerSocket(localPort,remoteHost,remotePort) // サーバーソケットを起動
     }catch (e:NumberFormatException) {
         println("ポートは数字のみを入力してください")
     }
+}
+
+private fun startServerSocket(localPort:Int, remoteHost:String, remotePort:Int) {
+    try {
+        ServerSocket(localPort).use { serverSocket ->
+            sendServerInfo() // サーバー情報出力
+            println()
+            println("[サーバーソケット] サーバーソケット起動しました (受信ポート:${localPort} -> 転送先：${remoteHost}:${remotePort})")
+            println()
+
+
+            while (true) {
+                val clientSocket = serverSocket.accept()
+                println("[ポート転送] ${clientSocket.inetAddress} -> ${remoteHost}:$remotePort")
+
+                // クライアントソケットとリモートソケットを処理する新しいスレッドを開始
+                Thread(ForwardingHandler(clientSocket, remoteHost, remotePort)).start()
+            }
+        }
+    } catch (e: Exception) {
+        println("エラーが発生しました: ${e.message}")
+    }
+}
+
+private fun sendServerInfo() {
+    val localHost = InetAddress.getLocalHost()
+    val privateIP = localHost.hostAddress // プライベートIP取得
+    val apiURL = URL("https://api.ipify.org") // グローバルIPを取得するためのapiのURL
+    val globalIP = apiURL.readText() // グローバルIPをapiで取得
+
+    println("[サーバーソケット情報]")
+    println("プライベートIP:$privateIP")
+    println("グローバルIP:$globalIP")
 }

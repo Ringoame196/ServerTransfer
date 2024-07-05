@@ -1,24 +1,39 @@
 package org.example
 
-import java.io.File
 import java.io.IOException
-import java.io.InputStream
 import java.net.ServerSocket
-import java.util.Properties
 
 
 fun main() {
-    val localPort = 19132 // 受信ポート
-    val remoteHost = "localhost" // 転送先のホスト
-    val remotePort = 25565 // 転送先のポート
+    println("[サーバーソケットサーバー設定]")
 
-    startServerSocket(localPort,remoteHost,remotePort) // サーバーソケットを起動
+    try {
+        print("受信ポートを入力してください:")
+        val localPort = readlnOrNull()?.toInt()
+
+        print("転送先のホストを入力してください(未入力の場合はlocalhostになります):")
+        val remoteHost = readlnOrNull() ?: "localhost"
+
+        print("転送先のポートを入力してください:")
+        val remotePort = readlnOrNull()?.toInt()
+
+        if (localPort == null || remotePort == null) {
+            println("受信ポートと転送先のポートは入力してください")
+            return
+        }
+
+        println()
+
+        startServerSocket(localPort,remoteHost,remotePort) // サーバーソケットを起動
+    }catch (e:NumberFormatException) {
+        println("ポートは数字のみを入力してください")
+    }
 }
 
-fun startServerSocket(localPort:Int, remoteHost:String, remotePort:Int) {
+private fun startServerSocket(localPort:Int, remoteHost:String, remotePort:Int) {
     try {
         ServerSocket(localPort).use { serverSocket ->
-            println("[サーバーソケット] サーバーソケット起動しました (Port:${localPort})")
+            println("[サーバーソケット] サーバーソケット起動しました (受信ポート:${localPort})")
             while (true) {
                 val clientSocket = serverSocket.accept()
                 println("[ポート転送] ${clientSocket.inetAddress} -> ${remoteHost}:$remotePort")

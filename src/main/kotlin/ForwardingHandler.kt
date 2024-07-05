@@ -37,17 +37,28 @@ class ForwardingHandler(private val clientSocket:Socket, private val remoteHost:
             }
         } catch (e: IOException) {
             sendCuttingMessage()
+        } finally {
+            try {
+                clientSocket.close()
+            } catch (e: IOException) {
+                println("[エラー] クライアントソケットのクローズに失敗しました: ${e.message}")
+            }
         }
     }
 
-    private fun forwardData(`in`: InputStream, out: OutputStream) {
+    private fun forwardData(input: InputStream, output: OutputStream) {
         val buffer = ByteArray(4096)
         var bytesRead: Int
-        while (`in`.read(buffer).also { bytesRead = it } != -1) {
-            out.write(buffer, 0, bytesRead)
-            out.flush()
+        try {
+            while (input.read(buffer).also { bytesRead = it } != -1) {
+                output.write(buffer, 0, bytesRead)
+                output.flush()
+            }
+        } catch (e: IOException) {
+            throw e // スローして、呼び出し元で処理させる
         }
     }
+
     private fun sendCuttingMessage() {
         val cuttingIp = clientSocket.inetAddress
         println("[サーバー転送] $cuttingIp が切断しました")

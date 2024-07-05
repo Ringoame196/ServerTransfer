@@ -9,16 +9,16 @@ fun main() {
     println("[サーバーソケットサーバー設定]")
     try {
         print("受信ポートを入力してください:")
-        val localPort = readlnOrNull()?.toInt()
+        val localPort = readlnOrNull()?.toIntOrNull()
 
         print("転送先のホストを入力してください(未入力の場合はlocalhostになります):")
         val remoteHost = readlnOrNull()?.takeIf { it.isNotBlank() } ?: "localhost"
 
         print("転送先のポートを入力してください:")
-        val remotePort = readlnOrNull()?.toInt()
+        val remotePort = readlnOrNull()?.toIntOrNull()
 
         if (localPort == null || remotePort == null) {
-            println("受信ポートと転送先のポートは入力してください")
+            println("[入力エラー]受信ポートと転送先のポートには有効な数字を入力してください")
             return
         }
 
@@ -48,9 +48,7 @@ private fun startServerSocket(localPort:Int, remoteHost:String, remotePort:Int) 
             }
         }
     } catch (e: Exception) {
-        println("[エラー] サーバー起動に失敗しました")
-        println(e.message)
-        return
+        println("エラーが発生しました: ${e.message}")
     }
 }
 

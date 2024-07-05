@@ -4,6 +4,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.Socket
+import java.time.LocalDateTime
 
 
 class ForwardingHandler(private val clientSocket:Socket, private val remoteHost:String, private val remotePort:Int):Runnable {
@@ -60,7 +61,11 @@ class ForwardingHandler(private val clientSocket:Socket, private val remoteHost:
     }
 
     private fun sendCuttingMessage() {
+        val time = LocalDateTime.now()
+        val hour = time.hour
+        val minute = time.minute
+        val second = time.second
         val cuttingIp = clientSocket.inetAddress
-        println("[サーバー転送] $cuttingIp が切断しました")
+        println("[$hour:$minute.$second] [サーバー転送] $cuttingIp が切断しました")
     }
 }

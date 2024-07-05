@@ -3,6 +3,7 @@ package org.example
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.URL
+import java.time.LocalDateTime
 
 
 fun main() {
@@ -36,12 +37,15 @@ private fun startServerSocket(localPort:Int, remoteHost:String, remotePort:Int) 
             sendServerInfo() // サーバー情報出力
             println()
             println("[サーバーソケット] サーバーソケット起動しました (受信ポート:${localPort} -> 転送先：${remoteHost}:${remotePort})")
-            println()
-
 
             while (true) {
                 val clientSocket = serverSocket.accept()
-                println("[ポート転送] ${clientSocket.inetAddress} -> ${remoteHost}:$remotePort")
+                val time = LocalDateTime.now()
+                val hour = time.hour
+                val minute = time.minute
+                val second = time.second
+
+                println("[$hour:$minute.$second] [ポート転送] ${clientSocket.inetAddress}:${clientSocket.port} -> ${remoteHost}:$remotePort")
 
                 // クライアントソケットとリモートソケットを処理する新しいスレッドを開始
                 Thread(ForwardingHandler(clientSocket, remoteHost, remotePort)).start()

@@ -66,6 +66,6 @@ class ForwardingHandler(private val clientSocket:Socket, private val remoteHost:
         val minute = time.minute
         val second = time.second
         val cuttingIp = clientSocket.inetAddress
-        println("[$hour:$minute.$second] [サーバー転送] $cuttingIp が切断しました")
+        println("[$hour:$minute.$second] [ポート転送] $cuttingIp が切断しました")
     }
 }

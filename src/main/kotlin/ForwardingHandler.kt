@@ -4,10 +4,11 @@ import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.Socket
-import java.time.LocalDateTime
 
 
 class ForwardingHandler(private val clientSocket:Socket, private val remoteHost:String, private val remotePort:Int):Runnable {
+    private val logManager = LogManager()
+
     override fun run() {
         try {
             Socket(remoteHost, remotePort).use { remoteSocket ->
@@ -16,21 +17,24 @@ class ForwardingHandler(private val clientSocket:Socket, private val remoteHost:
                         remoteSocket.getInputStream().use { remoteIn ->
                             remoteSocket.getOutputStream().use { remoteOut ->
 
-                                // クライアントからリモートサーバーへのデータ転送
-                                Thread {
+                                val clientToRemoteThread = Thread {
                                     try {
                                         forwardData(clientIn, remoteOut)
                                     } catch (e: IOException) {
                                         sendCuttingMessage()
                                     }
-                                }.start()
+                                }
 
-                                // リモートサーバーからクライアントへのデータ転送
+                                clientToRemoteThread.start()
+
                                 try {
                                     forwardData(remoteIn, clientOut)
                                 } catch (e: IOException) {
                                     sendCuttingMessage()
                                 }
+
+                                // クライアントからリモートサーバーへのデータ転送スレッドを待機
+                                clientToRemoteThread.join()
                             }
                         }
                     }
@@ -42,7 +46,8 @@ class ForwardingHandler(private val clientSocket:Socket, private val remoteHost:
             try {
                 clientSocket.close()
             } catch (e: IOException) {
-                println("[エラー] クライアントソケットのクローズに失敗しました: ${e.message}")
+                val errorMessage = "[エラー] クライアントソケットのクローズに失敗しました: ${e.message}"
+                logManager.sendLog(errorMessage)
             }
         }
     }
@@ -61,11 +66,8 @@ class ForwardingHandler(private val clientSocket:Socket, private val remoteHost:
     }
 
     private fun sendCuttingMessage() {
-        val time = LocalDateTime.now()
-        val hour = time.hour
-        val minute = time.minute
-        val second = time.second
         val cuttingIp = clientSocket.inetAddress
-        println("[$hour:$minute.$second] [ポート転送] $cuttingIp が切断しました")
+        val cuttingMessage = "[ポート転送] $cuttingIp が切断しました"
+        logManager.sendLog(cuttingMessage)
     }
 }

@@ -3,10 +3,14 @@ package org.example
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.URL
-import java.time.LocalDateTime
 
+private val logManager = LogManager()
 
 fun main() {
+    Runtime.getRuntime().addShutdownHook(Thread {
+        logManager.sendLog("サーバーシャットダウン")
+    })
+
     println("[サーバーソケットサーバー設定]")
     try {
         print("受信ポートを入力してください:")
@@ -36,23 +40,22 @@ private fun startServerSocket(localPort:Int, remoteHost:String, remotePort:Int) 
         ServerSocket(localPort).use { serverSocket ->
             sendServerInfo() // サーバー情報出力
             println()
-            println("[サーバーソケット] サーバーソケット起動しました (受信ポート:${localPort} -> 転送先：${remoteHost}:${remotePort})")
+            val startMessage = "[サーバーソケット] サーバーソケット起動しました (受信ポート:${localPort} -> 転送先：${remoteHost}:${remotePort})"
+            logManager.sendLog(startMessage)
 
             while (true) {
                 val clientSocket = serverSocket.accept()
-                val time = LocalDateTime.now()
-                val hour = time.hour
-                val minute = time.minute
-                val second = time.second
 
-                println("[$hour:$minute.$second] [ポート転送] ${clientSocket.inetAddress}:${clientSocket.port} -> ${remoteHost}:$remotePort")
+                val transferMessage = "[ポート転送] ${clientSocket.inetAddress}:${clientSocket.port} -> ${remoteHost}:$remotePort"
+                logManager.sendLog(transferMessage)
 
                 // クライアントソケットとリモートソケットを処理する新しいスレッドを開始
                 Thread(ForwardingHandler(clientSocket, remoteHost, remotePort)).start()
             }
         }
     } catch (e: Exception) {
-        println("エラーが発生しました: ${e.message}")
+        val errorMessage = "エラーが発生しました: ${e.message}"
+        logManager.sendLog(errorMessage)
     }
 }
 

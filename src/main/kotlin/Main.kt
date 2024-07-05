@@ -55,9 +55,9 @@ private fun startServerSocket(localPort:Int, remoteHost:String, remotePort:Int) 
 
 private fun sendServerInfo() {
     val localHost = InetAddress.getLocalHost()
-    val privateIP = localHost.hostAddress
-    val apiURL = URL("https://api.ipify.org")
-    val globalIP = apiURL.readText()
+    val privateIP = localHost.hostAddress // プライベートIP取得
+    val apiURL = URL("https://api.ipify.org") // グローバルIPを取得するためのapiのURL
+    val globalIP = apiURL.readText() // グローバルIPをapiで取得
 
     println("[サーバーソケット情報]")
     println("プライベートIP:$privateIP")

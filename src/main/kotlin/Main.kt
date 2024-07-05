@@ -1,6 +1,5 @@
 package org.example
 
-import java.io.IOException
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.URL
@@ -48,8 +47,10 @@ private fun startServerSocket(localPort:Int, remoteHost:String, remotePort:Int) 
                 Thread(ForwardingHandler(clientSocket, remoteHost, remotePort)).start()
             }
         }
-    } catch (e: IOException) {
-        e.printStackTrace()
+    } catch (e: Exception) {
+        println("[エラー] サーバー起動に失敗しました")
+        println(e.message)
+        return
     }
 }
 

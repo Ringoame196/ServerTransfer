@@ -11,6 +11,9 @@ TCPの通信を転送することが可能になる
 
 ![image](https://github.com/Ringoame196/ServerTransfer/assets/132573268/1c90073c-f880-4133-b505-07bedc719c07)
 
+## ログ
+鯖起動ログや接続ログは./log/日にち.logファイルに追加されます
+
 ## 開発環境
 - IntelliJ
 - 言語：Kotlin<br>

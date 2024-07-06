@@ -11,8 +11,8 @@ class LogManager {
         val minute = time.minute
         val second = time.second
         val sendMessage = "[$hour:$minute.$second]$log"
-        println(sendMessage)
         writeLogFile(sendMessage)
+        println(sendMessage)
     }
     private fun writeLogFile(log:String) {
         val time = LocalDateTime.now()

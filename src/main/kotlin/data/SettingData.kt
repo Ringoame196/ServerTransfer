@@ -1,4 +1,4 @@
-package org.example.Data
+package data
 
 import java.net.Socket
 

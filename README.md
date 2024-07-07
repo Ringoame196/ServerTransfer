@@ -18,3 +18,6 @@ TCPの通信を転送することが可能になる
 - IntelliJ
 - 言語：Kotlin<br>
 - OpenJDK：17
+
+## 使用API
+- [Ipify](https://api.ipify.org) - グローバルIP取得

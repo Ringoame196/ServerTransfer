@@ -9,7 +9,7 @@ import javax.swing.JTextField
 
 class FormManager {
     fun makeTopForm(): JFrame {
-        val frame = JFrame("Port Forwarding Settings")
+        val frame = JFrame("ServerTransfer")
         frame.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         frame.setSize(400, 200)
 

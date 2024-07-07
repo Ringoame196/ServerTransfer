@@ -10,7 +10,16 @@ fun main() {
     Runtime.getRuntime().addShutdownHook(Thread {
         logManager.sendLog("サーバーシャットダウン")
     })
+    form()
+}
 
+private fun form() {
+    val formManager = FormManager()
+    val topForm = formManager.makeTopForm() // メインフレームを作成
+    topForm.isVisible = true // フレームを表示する
+}
+
+private fun console() {
     println("[サーバーソケットサーバー設定]")
     try {
         print("受信ポートを入力してください:")

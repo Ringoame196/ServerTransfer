@@ -1,4 +1,4 @@
-package org.example
+package org.example.Form
 
 import javax.swing.GroupLayout
 import javax.swing.JButton

@@ -1,5 +1,3 @@
 package data
 
-import java.net.Socket
-
-data class SettingData(val clientSocket: Socket, val remoteHost:String, val remotePort:Int)
+data class SettingData(val localPort:Int, val remoteHost:String, val remotePort:Int)

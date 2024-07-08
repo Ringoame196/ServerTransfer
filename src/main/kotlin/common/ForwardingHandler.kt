@@ -1,13 +1,16 @@
 package org.example.common
 
+import data.SettingData
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.net.Socket
 
 
-class ForwardingHandler(private val clientSocket:Socket, private val remoteHost:String, private val remotePort:Int):Runnable {
+class ForwardingHandler(private val clientSocket:Socket, settingData: SettingData):Runnable {
     private val logManager = LogManager()
+    private val remoteHost = settingData.remoteHost
+    private val remotePort = settingData.remotePort
 
     override fun run() {
         try {

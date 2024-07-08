@@ -1,5 +1,6 @@
 package org.example
 
+import data.SettingData
 import org.example.common.ForwardingHandler
 import org.example.common.LogManager
 import java.net.InetAddress
@@ -30,15 +31,19 @@ fun main() {
         }
 
         println()
+        val settingData = SettingData(localPort,remoteHost,remotePort)
 
-        startServerSocket(localPort,remoteHost,remotePort) // サーバーソケットを起動
+        startServerSocket(settingData) // サーバーソケットを起動
     }catch (e:NumberFormatException) {
         println("ポートは数字のみを入力してください")
     }
 }
 
-private fun startServerSocket(localPort:Int, remoteHost:String, remotePort:Int) {
+private fun startServerSocket(settingData: SettingData) {
     try {
+        val localPort = settingData.localPort
+        val remoteHost = settingData.remoteHost
+        val remotePort = settingData.remotePort
         ServerSocket(localPort).use { serverSocket ->
             sendServerInfo() // サーバー情報出力
             println()
@@ -52,7 +57,7 @@ private fun startServerSocket(localPort:Int, remoteHost:String, remotePort:Int) 
                 logManager.sendLog(transferMessage)
 
                 // クライアントソケットとリモートソケットを処理する新しいスレッドを開始
-                Thread(ForwardingHandler(clientSocket, remoteHost, remotePort)).start()
+                Thread(ForwardingHandler(clientSocket, settingData)).start()
             }
         }
     } catch (e: Exception) {

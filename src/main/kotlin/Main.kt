@@ -29,17 +29,27 @@ fun main() {
             println("[入力エラー]受信ポートと転送先のポートには有効な数字を入力してください")
             return
         }
+        val whitelist = mutableListOf<String>()
+        while (true) {
+            print("通信を許可するIPを入力してください(未入力で設定完了 登録しない場合は全て許可)：")
+            val ip = readlnOrNull()?.takeIf { it.isNotBlank() }
+            if (ip == null) {
+                break
+            } else {
+                whitelist.add(ip)
+            }
+        }
 
         println()
         val settingData = SettingData(localPort,remoteHost,remotePort)
 
-        startServerSocket(settingData) // サーバーソケットを起動
+        startServerSocket(settingData,whitelist) // サーバーソケットを起動
     }catch (e:NumberFormatException) {
         println("ポートは数字のみを入力してください")
     }
 }
 
-private fun startServerSocket(settingData: SettingData) {
+private fun startServerSocket(settingData: SettingData,whitelist:MutableList<String>) {
     try {
         val localPort = settingData.localPort
         val remoteHost = settingData.remoteHost
@@ -53,11 +63,19 @@ private fun startServerSocket(settingData: SettingData) {
             while (true) {
                 val clientSocket = serverSocket.accept()
 
-                val transferMessage = "[ポート転送] ${clientSocket.inetAddress}:${clientSocket.port} -> ${remoteHost}:$remotePort"
-                logManager.sendLog(transferMessage)
+                val ipAddress = clientSocket.inetAddress
 
-                // クライアントソケットとリモートソケットを処理する新しいスレッドを開始
-                Thread(ForwardingHandler(clientSocket, settingData)).start()
+                if (checkCommunicationBlock(ipAddress.toString(),whitelist) && whitelist.size > 0) {
+                    println("許可されたIP以外からの通信のため遮断しました")
+                    val transferMessage = "[ポート転送] ${ipAddress}:${clientSocket.port} -> ブロック"
+                    logManager.sendLog(transferMessage)
+                    clientSocket.close()
+                } else {
+                    val transferMessage = "[ポート転送] ${ipAddress}:${clientSocket.port} -> ${remoteHost}:$remotePort"
+                    logManager.sendLog(transferMessage)
+                    // クライアントソケットとリモートソケットを処理する新しいスレッドを開始
+                    Thread(ForwardingHandler(clientSocket, settingData)).start()
+                }
             }
         }
     } catch (e: Exception) {
@@ -75,4 +93,8 @@ private fun sendServerInfo() {
     println("[サーバーソケット情報]")
     println("プライベートIP:$privateIP")
     println("グローバルIP:$globalIP")
+}
+
+private fun checkCommunicationBlock(ipAddress:String, whitelist:MutableList<String>):Boolean {
+    return !whitelist.contains(ipAddress.replace("/","")) // ホワイトリストチェック
 }

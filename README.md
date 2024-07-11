@@ -21,4 +21,3 @@ TCPの通信を転送することが可能になる
 
 ## 使用API
 - [Ipify](https://api.ipify.org) - グローバルIP取得
-- [IP Geolocation API](https://ipwhois.io) - IP情報を取得
